@@ -1,0 +1,13 @@
+{
+    "require": {
+        "twig/twig": ">=1.24.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "scc\\admin\\admin\\": "admin/",
+            "scc\\users\\": "users/",
+            "scc\\functions\\": "classes/"
+            
+        }
+    }
+}
