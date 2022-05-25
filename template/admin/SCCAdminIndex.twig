@@ -1,0 +1,98 @@
+{%if message !="0"%}
+    <div class="col-md-12 alert alert-warning"><ul>{{message|raw}}</ul></div> 
+        {%endif%}
+<div class="col-md-12">
+    <div class="alert alert-warning">
+        <h2>Please pay attention to:</h2>
+        <ul>
+            <li>Distance should be based on meters. enter just number, not anything else.</li>
+            <li>Price should be based on $. enter just number, not anything else, even currency sign.</li>
+            <li>Prices will be calculated for each km. for instance, if you set $2 for distance 1, and distance 1 be 8000, and the user register an order that  is 5km away from the shop, shipping price would be : 
+                $2<br>
+                But if you set $3 for distance 2, and distance 2 be 20000, and the user register an order that  is 15km away from the shop, shipping price would be : 
+                (15000 / 1000) * 3 = $15</li>
+        </ul>
+    </div>
+    <form action="" method="post"> 
+        <div class="control-group alert alert-success" style="margin-top: 15px;">
+            <h2>Distance and costs' settings</h2>
+            <div class="col-lg-6">
+                <label for="inputEmail" class="control-label">Minimum price for having delivery. If the user order will be less than this price, shipping cost calculator plugins' won't work.:</label>
+                <div class="controls">
+                    <input type="text" name="scc_minimum_order" class="form-control" value="{{scc_minimum_order}}"  />
+                </div>
+            </div>
+        </div> 
+
+        <div class="control-group alert alert-success" style="margin-top: 15px;">
+            <h2>Distances:</h2>
+            <div class="col-lg-6">
+                <label for="inputEmail" class="control-label">The first distance. It will be used from 0 m to this value. It must be based on meters.</label>
+                <div class="controls">
+                    <input type="text" name="scc_distance_less_than_1" class="form-control" value="{{scc_distance_less_than_1}}"  />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <label for="inputEmail" class="control-label">The second distance. It will be used from the first distance to this distance. It must be based on meters.</label>
+                <div class="controls">
+                    <input type="text" name="scc_distance_less_than_2" class="form-control" value="{{scc_distance_less_than_2}}"  />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <label for="inputEmail" class="control-label">The third distance. It will be used from the second to this distance. It must be based on meters.</label>
+                <div class="controls">
+                    <input type="text" name="scc_distance_less_than_3" class="form-control" value="{{scc_distance_less_than_3}}"  />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <label for="inputEmail" class="control-label">The fourth distance. It will be used from the third distance to this distance. It must be based on meters.</label>
+                <div class="controls">
+                    <input type="text" name="scc_distance_less_than_4" class="form-control" value="{{scc_distance_less_than_4}}"  />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <label for="inputEmail" class="control-label">The last distance. It will be used for the bigger value of this distance. It must be based on meters.</label>
+                <div class="controls">
+                    <input type="text" name="scc_distance_more_than" class="form-control" value="{{scc_distance_more_than}}"  />
+                </div>
+            </div>
+        </div>  
+        <div class="control-group alert alert-success" style="margin-top: 15px;">
+            <h2>Prices:</h2>
+            <div class="col-lg-6">
+                <label for="inputEmail" class="control-label">Price for distance 1</label>
+                <div class="controls">
+                    <input type="text" name="scc_distance_less_than_1_price" class="form-control" value="{{scc_distance_less_than_1_price}}"  />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <label for="inputEmail" class="control-label">Price for distance 2</label>
+                <div class="controls">
+                    <input type="text" name="scc_distance_less_than_2_price" class="form-control" value="{{scc_distance_less_than_2_price}}"  />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <label for="inputEmail" class="control-label">Price for distance 3</label>
+                <div class="controls">
+                    <input type="text" name="scc_distance_less_than_3_price" class="form-control" value="{{scc_distance_less_than_3_price}}"  />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <label for="inputEmail" class="control-label">Price for distance 4</label>
+                <div class="controls">
+                    <input type="text" name="scc_distance_less_than_4_price" class="form-control" value="{{scc_distance_less_than_4_price}}" placeholder="" />
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <label for="inputEmail" class="control-label">Price for distances that are bigger than distance 4</label>
+                <div class="controls">
+                    <input type="text" name="scc_distance_more_than_price" class="form-control" value="{{scc_distance_more_than_price}}" />
+                </div>
+            </div>
+        </div>  
+
+
+        <input type="submit" class="btn btn-primary" style="background: #007bff !important; margin-top:30px;" name="set_settings" value="Update" />
+    </form>
+
+</div>

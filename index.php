@@ -7,7 +7,7 @@
  * Author: Amir Haghighi
  * Version: 1.0.0
  * Author URI: haghighi251@gmail.com
- * Requires at least: 5.4
+ * Requires PHP at least: 5.4
  * Requires PHP: 7.3.12
  * Text Domain: scc
  *
@@ -15,6 +15,7 @@
  * @category Core
  *
  */
+
 session_start();
 
 /**
@@ -24,6 +25,7 @@ session_start();
  */
 //ABSPATH is a PHP constant defined by WordPress at the bottom of wp-config.php
 defined('ABSPATH') || exit;
+
 //Directories constants
 define('scc_dir', plugin_dir_path(__FILE__));
 define('scc_include', trailingslashit(scc_dir . 'include'));
@@ -31,6 +33,7 @@ define('scc_vendor_dir', trailingslashit(scc_dir . 'vendor'));
 define('scc_classes', trailingslashit(scc_dir . 'class'));
 define('scc_widget_dir', trailingslashit(scc_dir . 'widgets'));
 define('scc_template_dir', trailingslashit(scc_dir . 'template'));
+
 //URLs constants
 define('scc_url', plugin_dir_url(__FILE__));
 define('scc_template_url', trailingslashit(scc_url . 'template'));

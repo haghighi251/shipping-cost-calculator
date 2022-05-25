@@ -23,6 +23,7 @@ function scc_activation() {
     //$wpdb is used for working with WP db.
     global $wpdb;
     $charset_collate = $wpdb->get_charset_collate();
+    
     /**
      * Table important fields:
      * user_id: WP user id. ID column from "users" table.
@@ -47,6 +48,7 @@ function scc_activation() {
 
     //It sets the minimum order price to $10. You can change it from the admin dashboard panel.
     update_option('scc_minimum_order', 10);
+    
     //Setting default quantities for distance and price per $ for each distance
     update_option('scc_distance_less_than_1', 3000);
     update_option('scc_distance_less_than_1_price', 5);
@@ -69,7 +71,7 @@ function scc_activation() {
 function scc_scripts_and_styles() {
     //Make an instance from function class.
     $functions = new functions();
-
+    
     //Getting user IP
     $user_ip = $functions->get_user_ip();
 
@@ -107,7 +109,7 @@ function scc_scripts_and_styles() {
     //Current user id. It will return zero for unlogged users.
     $user_id = get_current_user_id();
 
-    if ($_SESSION['unique_location_code'] == "" || !isset($_SESSION['unique_location_code'])) {
+    if (is_null($_SESSION['unique_location_code'])) {
         $_SESSION['unique_location_code'] = time() . str_replace(".", "", $user_ip);
     }
 
@@ -124,10 +126,13 @@ function scc_scripts_and_styles() {
                 'SessionId' => $_SESSION['unique_location_code'],
             ));
             wp_enqueue_script('location', scc_url . 'asset/js/location.js', array('jquery'), '', true);
-        } else if (
-                ($location_query->lat == "" && $location_query->lon == "") || (is_null($location_query->lat) || is_null($location_query->lon))) {
-            wp_enqueue_script('location', scc_url . 'asset/js/location.js', array('jquery'), '', true);
-        }
+        } 
+         else if (
+                        ($location_query->lat == "" && $location_query->lon == "") ||
+                        (is_null($location_query->lat) || is_null($location_query->lon))
+                ) {
+                    wp_enqueue_script('location', scc_url . 'asset/js/location.js', array('jquery'), '', true);
+                }
     }
 }
 
@@ -135,8 +140,7 @@ function scc_scripts_and_styles() {
  * Making admin dashboard panel menu.
  */
 function scc_add_admin_menu() {
-    add_menu_page('SCC', 'scc administration', 'administrator', "scc_system", 'scc_admin_menu_actions', '', 3);
-    add_submenu_page('scc_system', 'Popup', 'Popup', 'administrator', 'scc_system&tab=popup', ' ');
+    add_menu_page('SCC', 'Shipping Cost Calculator', 'administrator', "scc_system", 'scc_admin_menu_actions', '', 3);
 }
 
 /**
@@ -144,13 +148,7 @@ function scc_add_admin_menu() {
  */
 function scc_admin_menu_actions() {
     $admin = new admin();
-    switch ($_GET['tab']) {
-        case 'popup':
-            $admin->popup();
-            break;
-        default:
-            break;
-    }
+    $admin->SCCAdminIndex();
 }
 
 /**
@@ -161,11 +159,12 @@ function scc_admin_menu_actions() {
  * @return boolean
  */
 function GetDeliveryPrice() {
+    $post = filter_input_array(INPUT_POST);
     //If we had calc_shipping_postcode or postcode parameters, We get distance from online google API, otherwise, we will get it from the "users_location" table.
-    if ($_POST['calc_shipping_postcode'] != "") {
-        $distance = GetDistanceAsZipCode($_POST['calc_shipping_postcode']);
-    } else if ($_POST['postcode'] != "") {
-        $distance = GetDistanceAsZipCode($_POST['postcode']);
+    if ($post['calc_shipping_postcode'] != "") {
+        $distance = GetDistanceAsZipCode($post['calc_shipping_postcode']);
+    } else if ($post['postcode'] != "") {
+        $distance = GetDistanceAsZipCode($post['postcode']);
     } else {
         //Getting distance from the db.
         global $wpdb;
@@ -178,9 +177,9 @@ function GetDeliveryPrice() {
         $location_query = $wpdb->get_row("SELECT * FROM {$wpdb->prefix}users_location WHERE ip='{$user_ip}'");
         if (!$location_query) {
             $distance = 0;
-        } else if ($location_query->lat == "" && $location_query->lon == "" && !is_numeric($location_query->distance) && $location_query->ZipCode != "") {
+        } else if ($location_query->lat == null && $location_query->lon == null && !is_numeric($location_query->distance) && $location_query->ZipCode != null) {
             $distance = GetDistanceAsZipCode($location_query->ZipCode);
-        } else if ($location_query->lat == "" && $location_query->lon == "" && !is_numeric($location_query->distance) && $location_query->ZipCode == "") {
+        } else if ($location_query->lat == null && $location_query->lon == null && !is_numeric($location_query->distance) && $location_query->ZipCode == null) {
             $distance = 0;
         } else {
             $distance = $location_query->distance;
@@ -234,7 +233,7 @@ function GetDeliveryPrice() {
  * @param type $package
  * @return type
  */
-function custom_shipping_costs($rates, $package) {
+function custom_shipping_costs($rates) {
     //We don't have a delivery for orders that have prices less than the minimum price that the admin has defined.
     //Getting the minimum price of orders.
     $minumum_orders_price = get_option('scc_minimum_order');
@@ -276,9 +275,9 @@ function custom_shipping_costs($rates, $package) {
  * @param type $ZipCode
  * @return boolean
  */
-function GetDistanceAsZipCode($ZipCode) {
+function GetDistanceAsZipCode($zip_code) {
     //For converting any space character to an acceptable URL value.
-    $ZipCode = urlencode($ZipCode);
+    $ZipCode = urlencode($zip_code);
     $google_api_key = get_option('scc_google_api_key');
     $q = "https://maps.googleapis.com/maps/api/distancematrix/json?origins=8679+E+10th+Avenue,+Burnaby,+BC&destinations={$ZipCode}&mode=driving&sensor=false&key={$$google_api_key}";
     $json = file_get_contents($q);
@@ -294,17 +293,18 @@ function GetDistanceAsZipCode($ZipCode) {
 
 /**
  * 
- * In this function we check if we are in the cart or checkout page, will add a js file for calculating distance with the browser GPS feature.
+ * In this function, we check that we are in the cart or checkout page, 
+ * if yes will add a js file for calculating distance with the browser GPS feature.
  * 
  * @param type $content
  * @return type
  */
 function CheckUserDistance($content) {
-    if (trim($content) == "[woocommerce_checkout]" ||
-            trim($content) == "[woocommerce_cart]") {
+    $pages_name = array("[woocommerce_checkout]","[woocommerce_cart]");
+    if (in_array(trim($content), $pages_name)) {
         //We are in the cart or checkout page in the WooCommerce.
         $delivery_fee = GetDeliveryPrice();
-        if ($delivery_fee == FALSE || $delivery_fee == 0) {
+        if ($delivery_fee === FALSE || $delivery_fee == 0) {
             add_action('wp_footer', 'my_footer_scripts');
         }
     }
