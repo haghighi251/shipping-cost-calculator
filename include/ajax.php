@@ -4,7 +4,10 @@
  * 
  * On the AJAX page, we just call the ajax method that needs to be called with an ajax request. These methods return JSON format.
  */
-session_start();
+
+if (!session_id()) {
+    session_start();
+}
 
 /**
  * 
@@ -135,7 +138,7 @@ function set_user_distance($distance) {
         )));
     } else {
         $wpdb->update("{$wpdb->prefix}users_location",
-                array("distance" => $distance,'ZipCode' => $_POST['zipcode']),//data
+                array("distance" => $distance, 'ZipCode' => $_POST['zipcode']), //data
                 array("ip" => $user_ip)//Where condition
         );
         return die(json_encode(array(

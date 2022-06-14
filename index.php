@@ -16,7 +16,9 @@
  *
  */
 
-session_start();
+if (!session_id()) {
+    session_start();
+}
 
 /**
  * The constants for SCC directory and URL for fixing setting the directories route or URLs problems.
@@ -44,8 +46,8 @@ include_once 'include/main_includes.php';
 
 /**
  * 
- These actions must to be call after $_SESSION['unique_location_code'].
- Don't move these actions from here. 
+  These actions must to be call after $_SESSION['unique_location_code'].
+  Don't move these actions from here.
  */
 add_action('wp_enqueue_scripts', 'scc_scripts_and_styles', 10000);
 add_action('admin_enqueue_scripts', 'scc_scripts_and_styles', 10000);

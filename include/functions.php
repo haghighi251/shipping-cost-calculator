@@ -5,7 +5,10 @@
  * Please pay attention to you can not find the AJAX functions on this file.
  * The AJAX functions are listed on the ajax.php file.
  */
-session_start();
+
+if (!session_id()) {
+    session_start();
+}
 
 //The namespaces that we need to use on this file.
 use scc\admin\admin\admin;
