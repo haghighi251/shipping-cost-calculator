@@ -52,3 +52,4 @@ include_once 'include/main_includes.php';
 add_action('wp_enqueue_scripts', 'scc_scripts_and_styles', 10000);
 add_action('admin_enqueue_scripts', 'scc_scripts_and_styles', 10000);
 
+

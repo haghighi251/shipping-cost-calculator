@@ -6,10 +6,6 @@
  * The AJAX functions are listed on the ajax.php file.
  */
 
-if (!session_id()) {
-    session_start();
-}
-
 //The namespaces that we need to use on this file.
 use scc\admin\admin\admin;
 use scc\functions\functions;
@@ -26,7 +22,7 @@ function scc_activation() {
     //$wpdb is used for working with WP db.
     global $wpdb;
     $charset_collate = $wpdb->get_charset_collate();
-    
+
     /**
      * Table important fields:
      * user_id: WP user id. ID column from "users" table.
@@ -51,7 +47,7 @@ function scc_activation() {
 
     //It sets the minimum order price to $10. You can change it from the admin dashboard panel.
     update_option('scc_minimum_order', 10);
-    
+
     //Setting default quantities for distance and price per $ for each distance
     update_option('scc_distance_less_than_1', 3000);
     update_option('scc_distance_less_than_1_price', 5);
@@ -63,7 +59,6 @@ function scc_activation() {
     update_option('scc_distance_less_than_4_price', 30);
     update_option('scc_distance_more_than', 100000);
     update_option('scc_distance_more_than_price', 50);
-    
 }
 
 /**
@@ -74,7 +69,7 @@ function scc_activation() {
 function scc_scripts_and_styles() {
     //Make an instance from function class.
     $functions = new functions();
-    
+
     //Getting user IP
     $user_ip = $functions->get_user_ip();
 
@@ -129,13 +124,12 @@ function scc_scripts_and_styles() {
                 'SessionId' => $_SESSION['unique_location_code'],
             ));
             wp_enqueue_script('location', scc_url . 'asset/js/location.js', array('jquery'), '', true);
-        } 
-         else if (
-                        ($location_query->lat == "" && $location_query->lon == "") ||
-                        (is_null($location_query->lat) || is_null($location_query->lon))
-                ) {
-                    wp_enqueue_script('location', scc_url . 'asset/js/location.js', array('jquery'), '', true);
-                }
+        } else if (
+                ($location_query->lat == "" && $location_query->lon == "") ||
+                (is_null($location_query->lat) || is_null($location_query->lon))
+        ) {
+            wp_enqueue_script('location', scc_url . 'asset/js/location.js', array('jquery'), '', true);
+        }
     }
 }
 
@@ -303,7 +297,7 @@ function GetDistanceAsZipCode($zip_code) {
  * @return type
  */
 function CheckUserDistance($content) {
-    $pages_name = array("[woocommerce_checkout]","[woocommerce_cart]");
+    $pages_name = array("[woocommerce_checkout]", "[woocommerce_cart]");
     if (in_array(trim($content), $pages_name)) {
         //We are in the cart or checkout page in the WooCommerce.
         $delivery_fee = GetDeliveryPrice();
@@ -312,4 +306,13 @@ function CheckUserDistance($content) {
         }
     }
     return $content;
+}
+
+/**
+ * Making a session if it has not been made.
+ */
+function start_session_wp() {
+    if (!session_id()) {
+        session_start();
+    }
 }

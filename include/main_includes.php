@@ -17,6 +17,10 @@ require_once scc_include . 'ajax.php';
  * https://developer.wordpress.org/reference/functions/add_action/
  * You can find the actions functions on the function.php file.
  */
+
+// Making session if it has not been made.
+add_action('init', 'start_session_wp', 1);
+
 //Activate action will just run one time after activating the plugin. This action will be made database tables.
 //We won't remove anything from WP databases after deactivating the plugin on this version.
 add_action('activate_scc/index.php', 'scc_activation');
